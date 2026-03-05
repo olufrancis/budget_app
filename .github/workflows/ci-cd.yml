@@ -112,6 +112,9 @@ jobs:
         run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > budgetflow-key.pem
           chmod 400 budgetflow-key.pem
+          
+      - name: Wait for EC2 to be ready
+        run: sleep 60
 
       - name: Update Inventory with EC2 IP
         run: |
