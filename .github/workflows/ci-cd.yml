@@ -116,8 +116,8 @@ jobs:
 
       - name: Create SSH Key File
         run: |
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > budgetflow-key.pem
-          chmod 400 budgetflow-key.pem
+           echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' > budgetflow-key.pem
+           chmod 400 budgetflow-key.pem
 
       - name: Debug EC2 IP
         run: echo "EC2 IP is ${{ needs.provision.outputs.ec2_ip }}"
@@ -131,7 +131,7 @@ jobs:
 
       - name: Test SSH Connection
         run: |
-          ssh -i budgetflow-key.pem -o StrictHostKeyChecking=no ubuntu@${{ needs.provision.outputs.ec2_ip }} "echo SSH connection successful"
+          ssh -i budgetflow-key.pem -o StrictHostKeyChecking=no -l ubuntu ${{ needs.provision.outputs.ec2_ip }} "echo SSH connection successful"
 
       - name: Run Ansible Playbook
         run: |
