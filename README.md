@@ -20,6 +20,7 @@ A Flask-based budgeting web application deployed using a full DevOps pipeline.
 - `scripts/` - Bash automation scripts
 - `.github/workflows/` - CI/CD pipeline
 
+
 ## Quick Start
 ```bash
 cd app
