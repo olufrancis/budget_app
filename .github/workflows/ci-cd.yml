@@ -96,8 +96,8 @@ jobs:
         id: get_ip
         run: |
           EC2_IP=$(terraform -chdir=terraform output -raw public_ip)
+          echo "EC2 IP is: $EC2_IP"
           echo "ec2_ip=$EC2_IP" >> $GITHUB_OUTPUT
-          echo "EC2 IP is $EC2_IP"
 
   # ─── JOB 4: DEPLOY WITH ANSIBLE ──────────────────────
   deploy:
