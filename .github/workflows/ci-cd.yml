@@ -116,14 +116,11 @@ jobs:
 
       - name: Create SSH Key File
         run: |
-           echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' > budgetflow-key.pem
-           chmod 400 budgetflow-key.pem
-
-      - name: Debug EC2 IP
-        run: echo "EC2 IP is ${{ needs.provision.outputs.ec2_ip }}"
-
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > budgetflow-key.pem
+          chmod 400 budgetflow-key.pem
+          
       - name: Wait for EC2 to be ready
-        run: sleep 90
+        run: sleep 60
 
       - name: Update Inventory with EC2 IP
         run: |
