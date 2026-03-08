@@ -124,11 +124,18 @@ jobs:
 
       - name: Update Inventory with EC2 IP
         run: |
-          sed -i "s/ansible_host=.*/ansible_host=${{ needs.provision.outputs.ec2_ip }}/" ansible/inventory.ini
+          cat > ansible/inventory.ini << EOF
+          [webserver]
+          budgetflow ansible_host=${{ needs.provision.outputs.ec2_ip }} ansible_user=ubuntu ansible_ssh_private_key_file=$(pwd)/budgetflow-key.pem
+
+          [webserver:vars]
+          ansible_python_interpreter=/usr/bin/python3
+          ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+          EOF
 
       - name: Test SSH Connection
         run: |
-          ssh -i budgetflow-key.pem -o StrictHostKeyChecking=no -l ubuntu ${{ needs.provision.outputs.ec2_ip }} "echo SSH connection successful"
+          ssh -i $(pwd)/budgetflow-key.pem -o StrictHostKeyChecking=no ubuntu@${{ needs.provision.outputs.ec2_ip }} "echo SSH connection successful"
 
       - name: Run Ansible Playbook
         run: |
