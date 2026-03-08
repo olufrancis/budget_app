@@ -1,7 +1,8 @@
 ---
 - name: Deploy BudgetFlow App
   hosts: webserver
-  become: yes 
+  become: yes
+  remote_user: ubuntu 
 
   vars:
     app_dir: /home/ubuntu/budgetflow-app
