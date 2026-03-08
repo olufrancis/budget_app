@@ -122,24 +122,34 @@ jobs:
       - name: Wait for EC2 to be ready
         run: sleep 60
 
+      - name: Debug EC2 IP
+        run: |
+          echo "EC2 IP from output: ${{ needs.provision.outputs.ec2_ip }}"
+
       - name: Update Inventory with EC2 IP
         run: |
+          EC2_IP="${{ needs.provision.outputs.ec2_ip }}"
+          echo "Using IP: $EC2_IP"
           cat > ansible/inventory.ini << EOF
           [webserver]
-          budgetflow ansible_host=${{ needs.provision.outputs.ec2_ip }} ansible_user=ubuntu ansible_ssh_private_key_file=$(pwd)/budgetflow-key.pem
+          budgetflow ansible_host=${EC2_IP} ansible_user=ubuntu ansible_ssh_private_key_file=$(pwd)/budgetflow-key.pem
 
           [webserver:vars]
           ansible_python_interpreter=/usr/bin/python3
           ansible_ssh_common_args='-o StrictHostKeyChecking=no'
           EOF
+          echo "Inventory file contents:"
+          cat ansible/inventory.ini
 
       - name: Test SSH Connection
         run: |
-          ssh -i $(pwd)/budgetflow-key.pem -o StrictHostKeyChecking=no ubuntu@${{ needs.provision.outputs.ec2_ip }} "echo SSH connection successful"
+          EC2_IP="${{ needs.provision.outputs.ec2_ip }}"
+          ssh -i $(pwd)/budgetflow-key.pem -o StrictHostKeyChecking=no ubuntu@${EC2_IP} "echo SSH connection successful"
 
       - name: Run Ansible Playbook
         run: |
-          ansible-playbook -i ansible/inventory.ini ansible/playbook.yml -u ubuntu --private-key budgetflow-key.pem
+          EC2_IP="${{ needs.provision.outputs.ec2_ip }}"
+          ansible-playbook -i ansible/inventory.ini ansible/playbook.yml -u ubuntu --private-key $(pwd)/budgetflow-key.pem -e "ansible_host=${EC2_IP}"
 
   # ─── JOB 5: CLEANUP ──────────────────────────────────
   cleanup:
